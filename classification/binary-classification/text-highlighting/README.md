@@ -20,6 +20,8 @@ Files:
 - `classification_amazon-crowd-highlights.csv`
 - `classification_oa-crowd-highlights.csv`
 - `classification_tech-crowd-highlights.csv`
+- `classification_tech-3x12-crowd-highlights.csv`
+- `classification_tech-6x6-crowd-highlights.csv`
 
 ### classification tasks using ML-generated highlights
 Files:
@@ -35,3 +37,7 @@ In this task, workers highlighted excerpts from documents that are relevant to a
 ### crowdsourced highlights
 
 File: `crowdsourced_highlights.csv`.
+
+### ML-generated highlights
+
+File: `ml_highlights.csv`.
