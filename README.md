@@ -36,4 +36,4 @@ Running the two scripts in given order will create one csv file within each data
 
 **Usage consent**
 
-By using this tool you agree to acknowledge the original datasets and to check their terms and condition. Some data providers may require authentication, filling forms, etc. We include a link to the original source in the table above.
+By using this tool you agree to acknowledge the original datasets and to check their terms and condition. Some data providers may require authentication, filling forms, etc. We include a link to the original source both in the table above and in the individual repository folders for usefulness.
