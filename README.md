@@ -1,15 +1,24 @@
 # CrowdData
 
-CrowdData is an open repository that aggregates the crowdsourced datasets that have individual crowd votes. We aim at providing the available datasets with a unique format (explained in `Download` section below) so that they can be directly used in experiments, without any work-load in preprocessing. The datasets included in this repo is mainly for classification/rating tasks.
-
-"text-highlighting" dataset within binary classification folder includes the datasets we collected, while all others are publicly available datasets. Each directory has a readme file that explains the details of datasets, and how to use them.
+CrowdData is an open repository that aggregates the crowdsourced datasets that have individual crowd votes. We aim at providing the available datasets with a standard format (explained in `Download` section below) so that they can be directly used in experiments, without any work-load in preprocessing. Datasets included in this repo are mainly for classification/rating tasks. CrowData can benefit researchers investigating hybrid usage of machine and human-in-the-loop in classification tasks (the repo includes some datasets having the actual content of the questions), human in classification and ranking tasks, truth discovery based on crowdsourced data, estimation of the crowd bias, and active learning.
 
 ## Datasets
 
-Table below shows an overview of the public datasets. We categorized them in two folders: `classification` and `rating`. 
-Within each folder, we keep a separate folder for each dataset having a link to the original source. 
+We categorized the datasets in two folders: `classification` and `rating`. Within each folder, we keep a separate folder for each dataset having a link to the original source. Table below shows an overview of the public datasets (text-highlighting dataset in binary classification folder is not included in this table as we collected it). The columns of the table are as follows:
 
-| <sub> Dataset  </sub> | <sub> Description  </sub>  | <sub> Number of questions </sub> | <sub> Number of workers </sub> | <sub> Number of total votes </sub>  | <sub> Ground Truth </sub>  | <sub> Question Type </sub>  | <sub> Question Content </sub>  | <sub> I don't know option </sub> | <sub> Time spent on task </sub>  |
+* `Dataset`: Name of the dataset including a link to the original source.
+* `Description`: A brief description of the dataset.
+* `Number of questions`: Basically, the number of questions asked to the crowd.
+* `Number of workers`: Number of crowd workers answering the questions.
+* `Number of total votes`: Number of votes collected.
+* `Ground Truth`: Is the ground truth available in the dataset? Yes? No? Partially available?
+* `Question Type`: Type of the question asked to the crowd.
+* `Question Content`: Content of the question asked to the crowd (text, image, etc.), and does the content available in the dataset? (Available? Unavailable? Partially available?)
+* `I don't know option`: Do the crowd workers have an "I don't know" option while answering the questions?
+* `Time spent on the task`: Does the dataset includes any information about the time spent on the questions?
+
+
+| <sub> Dataset  </sub> | <sub> Description  </sub>  | <sub> Number of questions </sub> | <sub> Number of workers </sub> | <sub> Number of total votes </sub>  | <sub> Ground Truth </sub>  | <sub> Question Type </sub>  | <sub> Question Content </sub>  | <sub> I don't know option </sub> | <sub> Time spent on the task </sub>  |
 |---|---|---|---|---|---|---|---|---|---|
 | <sub> [AdultContent2](https://github.com/ipeirotis/Get-Another-Label/tree/master/data/AdultContent2)  </sub>  | <sub>This dataset contains approximately 100K individual worker judgments and the related ground truths for classification of websites into 5 categories. </sub>  |  <sub> 11040   </sub> | <sub> 269 </sub> | <sub> 92721 </sub>  | <sub> Partially </sub>  | <sub> 5-class question </sub>  | <sub> text, unavailable </sub>  | <sub> No </sub>  | <sub> Unavailable </sub>  |
 | <sub> [AdultContent3](https://github.com/ipeirotis/Get-Another-Label/tree/master/data/AdultContent3-HCOMP2010) </sub> | <sub>This dataset contains approximately 50K individual worker judgments and the related ground truths for classification of websites into 4 categories. </sub>  |  <sub> 500 </sub> | <sub> 100 </sub> | <sub> 50000 </sub> | <sub> No </sub>| <sub> 4-class question </sub> | <sub> text, unavailable </sub>  | <sub> No  </sub>  | <sub> Unavailable </sub>  |
@@ -26,14 +35,24 @@ Within each folder, we keep a separate folder for each dataset having a link to 
 | <sub> [Emotion](https://sites.google.com/site/nlpannotations/) </sub> | <sub> This dataset contains individual worker votes that rate the emotion of a given text, based on the followings: anger, disgust, fear, joy, sadness, surprise, valence. Furthermore, each rating contains a value from -100 to 100 for each emotion about the text. </sub>                                                                                                                                                                                                                                                                                     |  <sub> 700  </sub> | <sub> 10 </sub> |  <sub> 7000 </sub> | <sub> Yes </sub> | <sub> rating (-100,100) </sub> | <sub> text, available </sub> | <sub> No  </sub>  | <sub> Unavailable </sub> |
 | <sub> [Word Pair Similarity](https://sites.google.com/site/nlpannotations/)  </sub> | <sub> This dataset contains the individual worker votes that assign a numerical similarity score between 0 and 10 to a given text.   </sub>                                                                                                                                                                                                                                                                                                                                                                                                                       |  <sub> 30 </sub> | <sub> 10 </sub> | <sub> 300  </sub> | <sub> Yes  </sub> | <sub> rating (0,10) </sub>  | <sub> text, unavailable </sub>   | <sub> No </sub>  | <sub> Unavailable </sub> |
 
-**Download**
+## Download
 
-We provide two python scripts that will help you to download all the datasets, and then transform them to a unique format. In order to do that, you should first run the `download_datasets.py`, and then `transform_datasets.py`. The required python version is 3.7, and the following modules should be installed on your system: `os, pandas, wget, zipfile, tarfile, re, platform, and shutil`.
+We provide two python scripts that will help you to download all the datasets, and then transform them to a standard format. In order to do that, you should first run the `download_datasets.py`, and then `transform_datasets.py`. The required python version is 3.7, and the following modules should be installed on your system: `os, pandas, wget, zipfile, tarfile, re, platform, and shutil`.
 
-Running the two scripts in given order will create one csv file within each dataset folder. These csv files will be in a unique format that includes the following columns, respectively: `workerID`, `taskID`, `response`, `goldLabel`, `taskContent`. Only `Sentiment popularity - AMT` and `Weather Sentiment - AMT` datasets will have an additional column: `timeSpent`.
+Running the two scripts in given order will create one csv file within each dataset folder. These csv files will be in a standard format that includes the following columns, respectively: 
+
+* `workerID`: ID of the crowd worker.
+* `taskID`: ID of the task/question answered.
+* `response`: Response of the corresponding worker on the task identified by `taskID`.
+* `goldLabel`: Gold label of the corresponding task (if available).
+* `taskContent`: Content of the task/question answered by the worker (if available).
+
+Only `Sentiment popularity - AMT` and `Weather Sentiment - AMT` datasets will have an additional column: 
+
+* `timeSpent`: How much time the corresponding worker spent on this task?
 
 (**You should not modify any of the directory names and/or dataset files you downloaded from this repo, in order to obtain the resultant csv files accurately**)
 
-**Usage consent**
+## Usage consent
 
-By using this tool you agree to acknowledge the original datasets and to check their terms and condition. Some data providers may require authentication, filling forms, etc. We include a link to the original source both in the table above and in the individual repository folders for usefulness.
+By using this tool you agree to acknowledge the original datasets and to check their terms and conditions. Some data providers may require authentication, filling forms, etc. We include a link to the original source both in the table above and in the individual repository folders for usefulness.
