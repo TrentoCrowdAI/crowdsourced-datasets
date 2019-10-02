@@ -1,24 +1,24 @@
 # CrowdData
 
-CrowdData is an open repository that aggregates the crowdsourced datasets that have individual crowd votes. We aim at providing the available datasets with a standard format (explained in `Download` section below) so that they can be directly used in experiments, without any work-load in preprocessing. Datasets included in this repo are mainly for classification/rating tasks. CrowData can benefit researchers investigating hybrid usage of machine and human-in-the-loop in classification tasks (the repo includes some datasets having the actual content of the questions), human in classification and ranking tasks, truth discovery based on crowdsourced data, estimation of the crowd bias, and active learning.
+CrowdData is an open repository that aggregates the crowdsourced datasets that have individual crowd votes. We aim at providing the available datasets with a standard format (explained in `Download` section below) so that they can be directly used in experiments, without any work-load in preprocessing. Datasets included in this repo are mainly for classification/rating tasks. CrowData can benefit researchers investigating hybrid usage of machine and human-in-the-loop in classification tasks (the repo includes some datasets having the actual content of the tasks), human in classification and ranking tasks, truth discovery based on crowdsourced data, estimation of the crowd bias, and active learning.
 
 ## Datasets
 
-We categorized the datasets in two folders: `classification` and `rating`. Within each folder, we keep a separate folder for each dataset having a link to the original source. Table below shows an overview of the public datasets (text-highlighting dataset in binary classification folder is not included in this table as we collected it). The columns of the table are as follows:
+We categorized the datasets in two folders: `classification` and `rating`. Within each folder, we keep a separate folder for each dataset having a link to the original source. Table below shows an overview of the public datasets. The columns of the table are as follows:
 
 * `Dataset`: Name of the dataset including a link to the original source.
 * `Description`: A brief description of the dataset.
-* `Number of questions`: Basically, the number of questions asked to the crowd.
-* `Number of workers`: Number of crowd workers answering the questions.
-* `Number of total votes`: Number of votes collected.
-* `Ground Truth`: Is the ground truth available in the dataset? Yes? No? Partially available?
-* `Question Type`: Type of the question asked to the crowd.
-* `Question Content`: Content of the question asked to the crowd (text, image, etc.), and does the content available in the dataset? (Available? Unavailable? Partially available?)
-* `I don't know option`: Do the crowd workers have an "I don't know" option while answering the questions?
-* `Time spent on the task`: Does the dataset includes any information about the time spent on the questions?
+* `Number of tasks`: The number of tasks asked to the crowd.
+* `Number of workers`: Number of crowd workers completing the tasks.
+* `Number of total votes`: Number of votes collected for all tasks.
+* `Ground Truth`: Are the ground truths of corresponding tasks available in the dataset? Yes? No? Partially available?
+* `Task Type`: Type of the task asked to the crowd.
+* `Task Content`: Content of the task asked to the crowd (text, image, etc.), and does the content available in the dataset? (Available? Unavailable? Partially available?)
+* `I don't know option`: Do the crowd workers have an "I don't know" option while completing the tasks?
+* `Time spent on the task`: Does the dataset includes any information about the time spent on the tasks?
 
 
-| <sub> Dataset  </sub> | <sub> Description  </sub>  | <sub> Number of questions </sub> | <sub> Number of workers </sub> | <sub> Number of total votes </sub>  | <sub> Ground Truth </sub>  | <sub> Question Type </sub>  | <sub> Question Content </sub>  | <sub> I don't know option </sub> | <sub> Time spent on the task </sub>  |
+| <sub> Dataset  </sub> | <sub> Description  </sub>  | <sub> Number of tasks </sub> | <sub> Number of workers </sub> | <sub> Number of total votes </sub>  | <sub> Ground Truth </sub>  | <sub> Task Type </sub>  | <sub> Task Content </sub>  | <sub> I don't know option </sub> | <sub> Time spent on the task </sub>  |
 |---|---|---|---|---|---|---|---|---|---|
 | <sub> [AdultContent2](https://github.com/ipeirotis/Get-Another-Label/tree/master/data/AdultContent2)  </sub>  | <sub>This dataset contains approximately 100K individual worker judgments and the related ground truths for classification of websites into 5 categories. </sub>  |  <sub> 11040   </sub> | <sub> 269 </sub> | <sub> 92721 </sub>  | <sub> Partially </sub>  | <sub> 5-class question </sub>  | <sub> text, unavailable </sub>  | <sub> No </sub>  | <sub> Unavailable </sub>  |
 | <sub> [AdultContent3](https://github.com/ipeirotis/Get-Another-Label/tree/master/data/AdultContent3-HCOMP2010) </sub> | <sub>This dataset contains approximately 50K individual worker judgments and the related ground truths for classification of websites into 4 categories. </sub>  |  <sub> 500 </sub> | <sub> 100 </sub> | <sub> 50000 </sub> | <sub> No </sub>| <sub> 4-class question </sub> | <sub> text, unavailable </sub>  | <sub> No  </sub>  | <sub> Unavailable </sub>  |
@@ -42,10 +42,10 @@ We provide two python scripts that will help you to download all the datasets, a
 Running the two scripts in given order will create one csv file within each dataset folder. These csv files will be in a standard format that includes the following columns, respectively: 
 
 * `workerID`: ID of the crowd worker.
-* `taskID`: ID of the task/question answered.
+* `taskID`: ID of the task answered by the corresponding worker.
 * `response`: Response of the corresponding worker on the task identified by `taskID`.
 * `goldLabel`: Gold label of the corresponding task (if available).
-* `taskContent`: Content of the task/question answered by the worker (if available).
+* `taskContent`: Content of the task answered by the worker (if available).
 
 Only `Sentiment popularity - AMT` and `Weather Sentiment - AMT` datasets will have an additional column: 
 
