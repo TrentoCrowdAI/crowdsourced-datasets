@@ -1,38 +1,52 @@
+'''
+By using this tool you agree to acknowledge the original datasets and to check their terms and conditions.
+Some data providers may require authentication, filling forms, etc.
+We include a link to the original source of each dataset in our repository, please cite the appropriate sources in your work.
+'''
+
 import os
 import pandas as pd
 import re
 import platform
+import csv
+from itertools import islice
 
 def recursive_walk(folder, delimeter):
     for folderName, subfolders, filenames in os.walk(folder):
         dest = os.path.join(os.getcwd(), folderName.split('data-raw')[0]) + 'transformed_dataset.csv'
-        if folderName == 'classification' + delimeter + 'binary-classification' + delimeter + 'Blue Birds' + delimeter + 'data-raw':
+        if folderName == 'binary-classification' + delimeter + 'Blue Birds' + delimeter + 'data-raw':
             processBlueBirds(filenames, folderName)
-        elif folderName == 'classification' + delimeter + 'binary-classification' + delimeter + 'HITspam-UsingCrowdflower' + delimeter + 'data-raw':
+        if folderName == 'binary-classification' + delimeter + 'Crowdsourced Amazon Sentiment' + delimeter + 'data-raw':
+            processCrowdsourcedAmazonSentimentDataset(filenames, folderName)
+        if folderName == 'binary-classification' + delimeter + 'Crowdsourced loneliness-slr' + delimeter + 'data-raw':
+            processCrowdsourcedLonelinessDataset(filenames, folderName)
+        elif folderName == 'binary-classification' + delimeter + 'HITspam-UsingCrowdflower' + delimeter + 'data-raw':
             processGoldAndLabelFiles(filenames, folderName, dest, None)
-        elif folderName == 'classification' + delimeter + 'binary-classification' + delimeter + 'HITspam-UsingMTurk' + delimeter + 'data-raw':
+        elif folderName == 'binary-classification' + delimeter + 'HITspam-UsingMTurk' + delimeter + 'data-raw':
             processGoldAndLabelFiles(filenames, folderName, dest, None)
-        elif folderName == 'classification' + delimeter + 'binary-classification' + delimeter + 'Recognizing Textual Entailment' + delimeter + 'data-raw':
+        elif folderName == 'binary-classification' + delimeter + 'Recognizing Textual Entailment' + delimeter + 'data-raw':
             processWithSeperateText(filenames, folderName, 'rte.standardized.tsv', 'rte1.tsv', dest, True)
-        elif folderName == 'classification' + delimeter + 'binary-classification' + delimeter + 'Sentiment popularity - AMT' + delimeter + 'data-raw':
+        elif folderName == 'binary-classification' + delimeter + 'Sentiment popularity - AMT' + delimeter + 'data-raw':
             processSentiment(filenames, folderName, dest)
-        elif folderName == 'classification' + delimeter + 'binary-classification' + delimeter + 'Temporal Ordering' + delimeter + 'data-raw':
+        elif folderName == 'binary-classification' + delimeter + 'Temporal Ordering' + delimeter + 'data-raw':
             processWithSeperateText(filenames, folderName, 'temp.standardized.tsv', 'all.tsv', dest, True)
-        elif folderName == 'classification' + delimeter + 'multi-label-classification' + delimeter + '2010 Crowdsourced Web Relevance Judgments' + delimeter + 'data-raw':
+        elif folderName == 'binary-classification' + delimeter + 'Text Highlighting' + delimeter + 'data-raw':
+            processTextHighlightingDataset(filenames, folderName)
+        elif folderName == 'multi-class-classification' + delimeter + '2010 Crowdsourced Web Relevance Judgments' + delimeter + 'data-raw':
             processTopicDocument(filenames, folderName, dest)
-        elif folderName == 'classification' + delimeter + 'multi-label-classification' + delimeter + 'AdultContent2' + delimeter + 'data-raw':
+        elif folderName == 'multi-class-classification' + delimeter + 'AdultContent2' + delimeter + 'data-raw':
             processGoldAndLabelFiles(filenames, folderName, dest, None)
-        elif folderName == 'classification' + delimeter + 'multi-label-classification' + delimeter + 'AdultContent3' + delimeter + 'data-raw':
+        elif folderName == 'multi-class-classification' + delimeter + 'AdultContent3' + delimeter + 'data-raw':
             processGoldAndLabelFiles(filenames, folderName, dest, None)
-        elif folderName == 'classification' + delimeter + 'multi-label-classification' + delimeter + 'Weather Sentiment - AMT' + delimeter + 'data-raw':
+        elif folderName == 'multi-class-classification' + delimeter + 'Weather Sentiment - AMT' + delimeter + 'data-raw':
             processSentiment(filenames, folderName, dest)
-        elif folderName == 'rating' + delimeter + 'Emotion' + delimeter + 'data-raw':
+        elif folderName == 'multi-class-classification' + delimeter + 'Emotion' + delimeter + 'data-raw':
             processEmotionDataset(filenames, folderName)
-        elif folderName == 'rating' + delimeter + 'Toloka Aggregation Relevance 2' + delimeter + 'data-raw':
+        elif folderName == 'binary-classification' + delimeter + 'Toloka Aggregation Relevance 2' + delimeter + 'data-raw':
             processGoldAndLabelFiles(filenames, folderName, dest, 'Toloka')
-        elif folderName == 'rating' + delimeter + 'Toloka Aggregation Relevance 5' + delimeter + 'data-raw':
+        elif folderName == 'multi-class-classification' + delimeter + 'Toloka Aggregation Relevance 5' + delimeter + 'data-raw':
             processGoldAndLabelFiles(filenames, folderName, dest, 'Toloka')
-        elif folderName == 'rating' + delimeter + 'Word Pair Similarity' + delimeter + 'data-raw':
+        elif folderName == 'multi-class-classification' + delimeter + 'Word Pair Similarity' + delimeter + 'data-raw':
             processWithSeperateText(filenames, folderName, 'wordsim.standardized.tsv', None, dest, False)
         else:
             for subfolder in subfolders:
@@ -195,6 +209,87 @@ def processEmotionDataset(filenames, folderName):
                     dfRow = pd.DataFrame([row], columns=columns)
                     df = df.append(dfRow)
             df.to_csv(dest, index=None, header=True)
+
+def processTextHighlightingDataset(filenames, folderName):
+    columns = ['workerID', 'taskID', 'response', 'goldLabel', 'taskContent']
+    df = pd.DataFrame([], columns=columns)
+    for file in sorted(filenames):
+        minus = 0
+        if file == 'crowdsourced_highlights.csv':
+            minus = 1
+        with open(os.path.join(folderName, file), encoding="utf8") as csv_file:
+            dest = os.path.join(os.getcwd(), folderName.split('data-raw')[0]) + 'transformed_dataset_' + file.split('.')[0] + '.csv'
+            next(csv_file)
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            for line in csv_reader:
+                if line[11 - minus] == 'True':
+                    row = [line[12 - minus], line[0], line[15 - minus], line[15 - minus], line[2]]
+                else:
+                    row = [line[12 - minus], line[0], line[15 - minus], None, line[2]]
+                dfRow = pd.DataFrame([row], columns=columns)
+                df = df.append(dfRow)
+            df.to_csv(dest, index=None, header=True)
+
+
+def processCrowdsourcedAmazonSentimentDataset(filenames, folderName):
+    columns = ['workerID', 'taskID', 'response', 'goldLabel', 'taskContent']
+    for file in sorted(filenames):
+        for i in range(2):
+            df = pd.DataFrame([], columns=columns)
+            with open(os.path.join(folderName, file), encoding="utf8") as csv_file:
+                filePostfix = 'is_book'
+                responseIndex = 14
+                goldenIndex = 23
+                if (i == 1):
+                    filePostfix = 'is_negative'
+                    responseIndex = 15
+                    goldenIndex = 25
+                dest = os.path.join(os.getcwd(),
+                                    folderName.split('data-raw')[0]) + 'transformed_dataset_' + filePostfix + '.csv'
+                next(csv_file)
+                csv_reader = csv.reader(csv_file, delimiter=',')
+                for line in csv_reader:
+                    row = [line[9], line[0], line[responseIndex], line[goldenIndex], line[27]]
+                    dfRow = pd.DataFrame([row], columns=columns)
+                    df = df.append(dfRow)
+                df.to_csv(dest, index=None, header=True)
+
+
+def processCrowdsourcedLonelinessDataset(filenames, folderName):
+    gt_dict = {}
+    for file in sorted(filenames):
+        with open(os.path.join(folderName, file), encoding="utf8") as csv_file:
+            next(csv_file)
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            gt_dict = {row[0] + 'intervention': row[14] for row in islice(csv_reader, 500)}
+
+    columns = ['workerID', 'taskID', 'response', 'goldLabel', 'taskContent']
+    for file in sorted(filenames):
+        for i in range(0, 9, 4):
+            df = pd.DataFrame([], columns=columns)
+            with open(os.path.join(folderName, file), encoding="utf8") as csv_file:
+                filePostfix = 'intervention'
+                goldenIndex = 14
+                if (i == 4):
+                    filePostfix = 'use_of_tech'
+                    goldenIndex = 15
+                elif (i == 8):
+                    filePostfix = 'older_adult'
+                    goldenIndex = 16
+                dest = os.path.join(os.getcwd(),
+                                    folderName.split('data-raw')[0]) + 'transformed_dataset_' + filePostfix + '.csv'
+                next(csv_file)
+                csv_reader = csv.reader(csv_file, delimiter=',')
+                for line in csv_reader:
+                    row = []
+                    if (i == 0):
+                        row = [line[i + 1], line[i], line[i + 2], gt_dict.get(line[i] + 'intervention'), None]
+                    else:
+                        row = [line[i + 1], line[i], line[i + 2], line[goldenIndex], None]
+                    dfRow = pd.DataFrame([row], columns=columns)
+                    df = df.append(dfRow)
+                df.to_csv(dest, index=None, header=True)
+
 
 if __name__ == '__main__':
     # get the current path
